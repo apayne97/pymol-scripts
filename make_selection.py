@@ -10,18 +10,18 @@ import yaml
 from pymol import cmd, stored
 
 ## Very useful script
-def make_selection(label = 'chainA', selection = 'chain A', structure_list = 'all', delete = False):
-    ## Assume that selections should be made on all available objects
+def make_selection(name = 'chainA', selection = 'chain A', structure_list = 'all', delete = False, color = True):
     if structure_list == 'all':
         structure_list = cmd.get_object_list()
-
-    ## If this is not the case,
     else:
-        ## Expects a space separated list of structures
-        structure_list = structure_list.split(' ')
+        ## This is ugly. 
+        ## It reminds me that I'm expecting a list, e.g. [7bv1, 7bv2]
+        ## The structures should not be in quotes
+        structure_list = structure_list.replace('[','').replace(']','').split(',')
+        print(structure_list)
         
     for structure in structure_list:
-        selname = f'{structure}_{label}'
+        selname = f'{structure}_{name}'
         full_selection = f'{structure} and {selection}'
         print(f'Making {selname}: {full_selection}')
         cmd.select(selname, full_selection)
@@ -29,27 +29,22 @@ def make_selection(label = 'chainA', selection = 'chain A', structure_list = 'al
         ## Nifty way to get rid of a bunch of selections I just made if made by accident
         if delete:
             cmd.delete(selname)
-            print(f'############ Deleted {selname}#############')
+            print('############ Deleted #############')
 
-
-def sel_from_file(file_name, structure_list = 'all', delete = False):
-    """
-    This is a script that takes a yaml file and makes selections based on the file.
-
-    :param file_name:
-    :param structure_list:
-    :param delete:
-    :return:
-    """
-
-    ## Load in the yaml file as a dictionary
-    with open(file_name) as file: seldict = yaml.full_load(file)
-
-    print(f'Making selections for {structure_list}')
-    for label, selection in seldict.items():
-        make_selection(label, selection, structure_list, delete)
-
-## This part is required to add to pymol
-## First run `run make_selection.py`, and then you can run either `make_selection` or `sel_from_file`
+def sel_from_file(file_name, structure_list = 'all', delete = False, color = True):
+    with open(file_name) as file:
+        seldict = yaml.full_load(file)
+    if structure_list == 'all':
+        structure_list = cmd.get_object_list()
+    else:
+        ## This is ugly. 
+        ## It reminds me that I'm expecting a list, e.g. [7bv1, 7bv2]
+        ## The structures should not be in quotes
+        structure_list = structure_list.replace('[','').replace(']','').split(',')
+        print(structure_list)
+    for structure in structure_list:
+        for name, selection in seldict.items():
+                make_selection(name, selection, structure, delete, color)
+                
 cmd.extend('make_selection', make_selection)
 cmd.extend('sel_from_file', sel_from_file)
