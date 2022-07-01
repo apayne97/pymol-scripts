@@ -5,10 +5,14 @@ Created on Thu Jun 11 11:34:28 2020
 
 @author: alexpayne
 """
-
+import pymol.util
 import yaml
 from pymol import cmd, stored
 
+# import colorblindfriendly as cbf
+#
+# # Replace built-in colors with cbf ones
+# cbf.set_colors(replace=True)
 
 ## Very useful script
 def color_selection(name='chainA', structure_list='all', color='carbon'):
@@ -29,6 +33,7 @@ def color_selection(name='chainA', structure_list='all', color='carbon'):
         else:
             cmd.set('cartoon_color', color, selname)
             cmd.set('surface_color', color, selname)
+            pymol.util.color_carbon(color, selname)
 
 
 # def color_selection()
