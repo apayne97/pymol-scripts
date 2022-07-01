@@ -10,7 +10,7 @@ import yaml
 from pymol import cmd, stored
 
 ## Very useful script
-def make_selection(name = 'chainA', selection = 'chain A', structure_list = 'all', delete = False, color = True):
+def make_selection(name = 'chainA', selection = 'chain A', structure_list = 'all', delete = False):
     if structure_list == 'all':
         structure_list = cmd.get_object_list()
     else:
@@ -31,7 +31,7 @@ def make_selection(name = 'chainA', selection = 'chain A', structure_list = 'all
             cmd.delete(selname)
             print('############ Deleted #############')
 
-def sel_from_file(file_name, structure_list = 'all', delete = False, color = True):
+def sel_from_file(file_name, structure_list = 'all', delete = False):
     with open(file_name) as file:
         seldict = yaml.full_load(file)
     if structure_list == 'all':
@@ -44,7 +44,7 @@ def sel_from_file(file_name, structure_list = 'all', delete = False, color = Tru
         print(structure_list)
     for structure in structure_list:
         for name, selection in seldict.items():
-                make_selection(name, selection, structure, delete, color)
+                make_selection(name, selection, structure, delete)
                 
 cmd.extend('make_selection', make_selection)
 cmd.extend('sel_from_file', sel_from_file)
